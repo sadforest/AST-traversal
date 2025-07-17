@@ -1,0 +1,13 @@
+import javax.swing.*;
+
+public class DisplayTree {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame();
+        JButton button = new JButton("HELLO");
+        button.setSize(200, 200);
+        frame.add(button);
+        frame.setSize(400,500);
+        frame.setVisible(true);
+
+    }
+}
