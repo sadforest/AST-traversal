@@ -1,0 +1,21 @@
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
+import java.util.List;
+
+public class TraverseAST {
+
+    public static void main(List<char[]> files, ASTVisitor visitor) {
+        for (char[] file : files) {
+            ASTParser parser = ASTParser.newParser(AST.JLS18);
+            parser.setSource(file);
+            parser.setKind(ASTParser.K_COMPILATION_UNIT);
+
+            CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+
+            cu.accept(visitor);
+        }
+    }
+}
