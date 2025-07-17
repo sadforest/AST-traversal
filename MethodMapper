@@ -1,0 +1,74 @@
+import org.eclipse.jdt.core.dom.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class MethodMapper {
+    private static int methodCount = 0;
+    private static final HashMap<String, Integer> methodMap = new HashMap<String, Integer>();
+    private static final List<String> unusedMethods = new ArrayList<String>();
+
+    public static HashMap<String, Integer> mapMethods(List<char[]> files) {
+        MethodVisitor methodVisitor = new MethodVisitor();
+        TraverseAST.main(files, methodVisitor);
+
+        for(char[] file : files){
+            ASTParser parser = ASTParser.newParser(AST.JLS18);
+            parser.setSource(file);
+            parser.setKind(ASTParser.K_COMPILATION_UNIT);
+            CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+
+            MethodInvocationVisitor methodCountVisitor = new MethodInvocationVisitor();
+            cu.accept(methodCountVisitor);
+        }
+
+        return finalizeMap(methodMap);
+    }
+
+    private static HashMap<String, Integer> finalizeMap(HashMap<String, Integer> map){
+        for(String key : map.keySet()){
+            if(map.get(key).equals(0)){
+                unusedMethods.add(key);
+            }
+        }
+
+        for(String key : unusedMethods){
+            if(map.containsKey(key)){
+                map.remove(key);
+            }
+        }
+
+        return map;
+    }
+
+    public static int getMethodCount(){
+        return methodCount;
+    }
+
+    public static List<String> getUnusedMethods(){
+        return unusedMethods;
+    }
+
+    public static class MethodVisitor extends ASTVisitor {
+        public boolean visit(MethodDeclaration node) {
+            if (!node.isConstructor()) {
+                methodCount++;
+                methodMap.put(node.getName().toString(), 0);
+            }
+            return true;
+        }
+    }
+
+    public static class MethodInvocationVisitor extends ASTVisitor{
+        public boolean visit(MethodInvocation node){
+            if(methodMap.containsKey(node.getName().toString())) {
+                methodMap.put(node.getName().toString(), methodMap.get(node.getName().toString()) + 1);
+            }
+            else {
+                methodMap.put(node.getName().toString(), 1);
+            }
+            return true;
+        }
+    }
+}
