@@ -7,7 +7,7 @@ public class Driver {
     private static Queue<HashMap<String, Integer>> methodQueue = new LinkedList<HashMap<String, Integer>>();
 
     public static void main(String[] args) throws Exception {
-        String javaDir = "C:\\Users\\dalem\\Desktop\\taxi-company-later-stage";
+        String javaDir = "";
         Scanner userInput = new Scanner(System.in);
 
 
